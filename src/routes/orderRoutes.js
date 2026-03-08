@@ -7,11 +7,21 @@ const {
   updateOrder,
   deleteOrder
 } = require("../controllers/orderController");
+const { login } = require("../controllers/authController");
+const authenticateToken = require("../middlewares/authMiddleware");
 
 module.exports = async (req, res) => {
 
-  const url = req.url;
+  const url = req.url.split("?")[0];
   const method = req.method;
+
+  if (method === "POST" && url === "/auth/login") {
+    return login(req, res);
+  }
+
+  if (url.startsWith("/order") && !authenticateToken(req, res)) {
+    return;
+  }
 
   if (method === "POST" && url === "/order") {
     return createOrder(req, res);
