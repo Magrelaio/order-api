@@ -43,15 +43,19 @@ exports.createOrder = async (req, res) => {
     res.statusCode = 201;
     res.end(JSON.stringify(order));
   } catch (error) {
-    console.error("Error creating order:", error);
-
     if (error && error.code === 11000) {
+      const duplicatedOrderId = error?.keyValue?.orderId || "unknown";
+      console.warn(`Pedido duplicado: já existe um pedido com o número: ${duplicatedOrderId}`);
       res.statusCode = 409;
-      return res.end(JSON.stringify({ message: "Order already exists" }));
+      return res.end(JSON.stringify({
+        message: `Pedido duplicado: já existe um pedido com o número ${duplicatedOrderId}`
+      }));
     }
 
+    console.error("Erro ao criar pedido:", error);
+
     res.statusCode = 500;
-    res.end(JSON.stringify({ message: "Error creating order", error: error.message }));
+    res.end(JSON.stringify({ message: "Erro ao criar pedido", error: error.message }));
   }
 };
 
@@ -118,7 +122,17 @@ exports.updateOrder = async (req, res, id) => {
     res.statusCode = 200;
     res.end(JSON.stringify(order));
   } catch (error) {
+    if (error && error.code === 11000) {
+      const duplicatedOrderId = error?.keyValue?.orderId || "unknown";
+      console.warn(`Pedido duplicado: já existe um pedido com o número: ${duplicatedOrderId}`);
+      res.statusCode = 409;
+      return res.end(JSON.stringify({
+        message: `Pedido duplicado: já existe um pedido com o número ${duplicatedOrderId}`
+      }));
+    }
+
     console.error("Error updating order:", error);
+
     res.statusCode = 500;
     res.end(JSON.stringify({ message: "Error updating order", error: error.message }));
   }
