@@ -38,7 +38,7 @@ JWT_EXPIRES_IN=7d
 
 Gerar `JWT_SECRET` forte:
 
-```powershell
+```powershell e linux
 node -e "console.log(require('crypto').randomBytes(64).toString('hex'))"
 ```
 
@@ -198,6 +198,11 @@ Já existe outro processo usando a porta 3000.
 ```powershell
 Stop-Process -Name node -Force
 npm start
+```
+
+```linux
+lsof -i :3000
+kill -9 <PID>
 ```
 
 ### `401 Unauthorized` em `/order/list`
